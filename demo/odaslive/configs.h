@@ -20,6 +20,8 @@
         mod_stft_cfg * mod_stft_mics_config;
         msg_spectra_cfg * msg_spectra_mics_config;
 
+        mod_echo_cfg * mod_echo_mics_config;
+
         mod_noise_cfg * mod_noise_mics_config;
         msg_powers_cfg * msg_powers_mics_config;
 

@@ -22,6 +22,7 @@ extern "C" {
     #include <module/mod_classify.h>
     #include <module/mod_istft.h>
     #include <module/mod_mapping.h>
+    #include <module/mod_echo.h>
     #include <module/mod_noise.h>
     #include <module/mod_resample.h>
     #include <module/mod_ssl.h>
@@ -54,6 +55,7 @@ extern "C" {
     #include <amodule/amod_classify.h>
     #include <amodule/amod_istft.h>
     #include <amodule/amod_mapping.h>
+    #include <amodule/amod_echo.h>
     #include <amodule/amod_noise.h>
     #include <amodule/amod_resample.h>
     #include <amodule/amod_ssl.h>

@@ -9,6 +9,7 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(PC_FFTW3 REQUIRED fftw3f)
 pkg_check_modules(PC_ALSA REQUIRED alsa)
 pkg_check_modules(PC_LIBCONFIG REQUIRED libconfig)
+pkg_check_modules(PC_SPEEXDSP REQUIRED speexdsp)
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
@@ -135,6 +136,7 @@ set(SRC
     src/amodule/amod_classify.c
     src/amodule/amod_istft.c
     src/amodule/amod_mapping.c
+    src/amodule/amod_echo.c
     src/amodule/amod_noise.c
     src/amodule/amod_resample.c
     src/amodule/amod_ssl.c
@@ -168,6 +170,7 @@ set(SRC
     src/module/mod_classify.c
     src/module/mod_istft.c
     src/module/mod_mapping.c
+    src/module/mod_echo.c
     src/module/mod_noise.c
     src/module/mod_resample.c
     src/module/mod_ssl.c
@@ -193,6 +196,7 @@ target_link_libraries(odas
 	${PC_FFTW3_LIBRARIES}
 	${PC_ALSA_LIBRARIES}
     ${PC_LIBCONFIG_LIBRARIES}
+    ${PC_SPEEXDSP_LIBRARIES}
 	m
     pthread
 )

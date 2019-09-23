@@ -32,7 +32,8 @@
 
     msg_spectra_cfg * parameters_msg_spectra_mics_config(const char * fileConfig);
 
-
+    mod_echo_cfg * parameters_mod_echo_mics_config(const char * fileConfig);
+    
     mod_noise_cfg * parameters_mod_noise_mics_config(const char * fileConfig);
 
     msg_powers_cfg * parameters_msg_powers_mics_config(const char * fileConfig);

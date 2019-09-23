@@ -83,6 +83,25 @@
                     objs->con_spectra_mics_object = con_spectra_construct(3, cfgs->msg_spectra_mics_config);
 
             // +------------------------------------------------------+
+            // | Echo                                                 |
+            // +------------------------------------------------------+  
+
+                // +--------------------------------------------------+
+                // | Module                                           |
+                // +--------------------------------------------------+  
+
+                    objs->mod_echo_mics_object = mod_echo_construct(cfgs->mod_echo_mics_config, 
+                                                                      cfgs->msg_spectra_mics_config, 
+                                                                      cfgs->msg_powers_mics_config);
+
+                // +--------------------------------------------------+
+                // | Connector                                        |
+                // +--------------------------------------------------+  
+
+                    objs->con_echo_mics_object = con_powers_construct(1, cfgs->msg_powers_mics_config);
+
+
+            // +------------------------------------------------------+
             // | Noise                                                |
             // +------------------------------------------------------+  
 
@@ -344,6 +363,18 @@
                                      objs->con_spectra_mics_object->in);
 
             // +------------------------------------------------------+
+            // | Echo                                                 |
+            // +------------------------------------------------------+  
+
+                // +--------------------------------------------------+
+                // | Module                                           |
+                // +--------------------------------------------------+  
+
+                    mod_echo_connect(objs->mod_echo_mics_object,
+                                      objs->con_spectra_mics_object->outs[0],
+                                      objs->con_echo_mics_object->in);
+
+            // +------------------------------------------------------+
             // | Noise                                                |
             // +------------------------------------------------------+  
 
@@ -524,6 +555,7 @@
 
                 mod_ssl_enable(objs->mod_ssl_object);
                 mod_sst_enable(objs->mod_sst_object);
+                mod_echo_enable(objs->mod_echo_mics_object);
                 mod_noise_enable(objs->mod_noise_mics_object);
                 mod_sss_enable(objs->mod_sss_object);
                 mod_istft_enable(objs->mod_istft_seps_object);
@@ -536,6 +568,7 @@
 
                 mod_ssl_enable(objs->mod_ssl_object);
                 mod_sst_enable(objs->mod_sst_object);
+                mod_echo_enable(objs->mod_echo_mics_object);
                 mod_noise_enable(objs->mod_noise_mics_object);
                 mod_sss_enable(objs->mod_sss_object);
                 mod_istft_enable(objs->mod_istft_pfs_object);
@@ -548,6 +581,7 @@
 
                 mod_ssl_enable(objs->mod_ssl_object);
                 mod_sst_enable(objs->mod_sst_object);
+                mod_echo_enable(objs->mod_echo_mics_object);
                 mod_noise_enable(objs->mod_noise_mics_object);
                 mod_sss_enable(objs->mod_sss_object);
                 mod_istft_enable(objs->mod_istft_seps_object);
@@ -630,6 +664,22 @@
                 // +--------------------------------------------------+  
 
                     con_spectra_destroy(objs->con_spectra_mics_object);
+
+            // +------------------------------------------------------+
+            // | Echo                                                 |
+            // +------------------------------------------------------+  
+
+                // +--------------------------------------------------+
+                // | Module                                           |
+                // +--------------------------------------------------+  
+
+                    mod_echo_destroy(objs->mod_echo_mics_object);
+                                        
+                // +--------------------------------------------------+
+                // | Connector                                        |
+                // +--------------------------------------------------+  
+
+                    con_powers_destroy(objs->con_echo_mics_object);
 
             // +------------------------------------------------------+
             // | Noise                                                |
@@ -895,6 +945,24 @@
                     objs->acon_spectra_mics_object = acon_spectra_construct(3, objs->nMessages, cfgs->msg_spectra_mics_config);
 
             // +------------------------------------------------------+
+            // | Echo                                                 |
+            // +------------------------------------------------------+ 
+
+                // +--------------------------------------------------+
+                // | Module                                           |
+                // +--------------------------------------------------+  
+
+                    objs->amod_echo_mics_object = amod_echo_construct(cfgs->mod_echo_mics_config, 
+                                                                        cfgs->msg_spectra_mics_config, 
+                                                                        cfgs->msg_powers_mics_config);
+
+                // +--------------------------------------------------+
+                // | Connector                                        |
+                // +--------------------------------------------------+
+                    
+                    objs->acon_echo_mics_object = acon_powers_construct(1, objs->nMessages, cfgs->msg_powers_mics_config);
+
+            // +------------------------------------------------------+
             // | Noise                                                |
             // +------------------------------------------------------+  
 
@@ -1158,6 +1226,18 @@
                                       objs->acon_spectra_mics_object->in);
 
             // +------------------------------------------------------+
+            // | Echo                                                 |
+            // +------------------------------------------------------+  
+
+                // +--------------------------------------------------+
+                // | Module                                           |
+                // +--------------------------------------------------+  
+
+                    amod_echo_connect(objs->amod_echo_mics_object,
+                                       objs->acon_spectra_mics_object->outs[0],
+                                       objs->acon_echo_mics_object->in);
+            
+            // +------------------------------------------------------+
             // | Noise                                                |
             // +------------------------------------------------------+  
 
@@ -1338,6 +1418,7 @@
 
                 amod_ssl_enable(objs->amod_ssl_object);
                 amod_sst_enable(objs->amod_sst_object);
+                amod_echo_enable(objs->amod_echo_mics_object);
                 amod_noise_enable(objs->amod_noise_mics_object);
                 amod_sss_enable(objs->amod_sss_object);
                 amod_istft_enable(objs->amod_istft_seps_object);
@@ -1350,6 +1431,7 @@
 
                 amod_ssl_enable(objs->amod_ssl_object);
                 amod_sst_enable(objs->amod_sst_object);
+                amod_echo_enable(objs->amod_echo_mics_object);
                 amod_noise_enable(objs->amod_noise_mics_object);
                 amod_sss_enable(objs->amod_sss_object);
                 amod_istft_enable(objs->amod_istft_pfs_object);
@@ -1362,6 +1444,7 @@
 
                 amod_ssl_enable(objs->amod_ssl_object);
                 amod_sst_enable(objs->amod_sst_object);
+                amod_echo_enable(objs->amod_echo_mics_object);
                 amod_noise_enable(objs->amod_noise_mics_object);
                 amod_sss_enable(objs->amod_sss_object);
                 amod_istft_enable(objs->amod_istft_seps_object);
@@ -1444,6 +1527,22 @@
                 // +--------------------------------------------------+  
 
                     acon_spectra_destroy(objs->acon_spectra_mics_object);   
+
+            // +------------------------------------------------------+
+            // | Echo                                                 |
+            // +------------------------------------------------------+  
+
+                // +--------------------------------------------------+
+                // | Module                                           |
+                // +--------------------------------------------------+  
+
+                    amod_echo_destroy(objs->amod_echo_mics_object);
+                    
+                // +--------------------------------------------------+
+                // | Connector                                        |
+                // +--------------------------------------------------+  
+
+                    acon_powers_destroy(objs->acon_echo_mics_object);
 
             // +------------------------------------------------------+
             // | Noise                                                |
