@@ -64,7 +64,6 @@
         obj = (amod_echo_obj *) ptr;
 
         while(1) {
-
             // Pop a message, process, and push back
             msg_hops_in = amsg_hops_filled_pop(obj->in);
             msg_hops_out = amsg_hops_empty_pop(obj->out);

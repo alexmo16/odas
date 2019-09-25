@@ -13,6 +13,7 @@
         obj->out = (msg_hops_obj *) NULL;
 
         obj->enabled = 0;
+        obj->frameSize = mod_echo_config->frameSize;
 
         return obj;
     }
@@ -30,33 +31,34 @@
         printf("start echo process.\n");
 
         const unsigned int nSignals = obj->in->hops->nSignals;
-        printf("%d signals\n", nSignals);
+        //printf("%d signals\n", nSignals);
         
         unsigned int iChannel;
         unsigned int iSample;
         float sample;
-        unsigned int nBytes = 4;
+        unsigned int nBytes = 2;
         unsigned int nBytesTotal = 0;
         
         unsigned int hopSize = obj->in->hops->hopSize;
-        unsigned int frameSize = hopSize * 2;
+        unsigned int frameSize = obj->frameSize;
         unsigned int sampleRate = obj->in->fS;
         
-        printf("hopSize %d\n", hopSize);
-        printf("frame %d\n", frameSize);
-        short * inBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * 4);
+        //printf("hopSize %d\n", hopSize);
+        //printf("frame %d\n", frameSize);
+        short * inBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * 2);
 
-        printf("inBuffer: %d\n", *inBuffer);
-        memset(inBuffer, 0x00, sizeof(char) * nSignals * frameSize * 4);
+        //printf("inBuffer: %d\n", *inBuffer);
+        memset(inBuffer, 0x00, sizeof(char) * nSignals * frameSize * 2);
         
-        short * outBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * 4);
-        memset(outBuffer, 0x00, sizeof(char) * nSignals * frameSize * 4);
+        short * outBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * 2);
+        //printf("outBuffer: %d\n", *outBuffer);
+        memset(outBuffer, 0x00, sizeof(char) * nSignals * frameSize * 2);
         
         char bytes[4];
         memset(bytes, 0x00, 4 * sizeof(char));
-
+        
+        // Convert floats from the input to int16 bytes.
         for (iSample = 0; iSample < frameSize; iSample++) {
-
             for (iChannel = 0; iChannel < nSignals; iChannel++) {
                 sample = obj->in->hops->array[iChannel][iSample];
                 pcm_normalized2signedXXbits(sample, nBytes, bytes);
@@ -66,23 +68,40 @@
             }
         }
 
+        // Process the echo cancelling on the in16 bytes.
         for (unsigned int iSignal = 0; iSignal < nSignals; iSignal++) {
-            //todo lire dans le buffer un size un hopsize
-            SpeexEchoState * st;
-            SpeexPreprocessState * den;
-            st = speex_echo_state_init(hopSize, frameSize);
-            den = speex_preprocess_state_init(hopSize, sampleRate);
             
-            speex_echo_ctl(st, SPEEX_ECHO_SET_SAMPLING_RATE, &sampleRate);
-            speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_STATE, st);
+            short * chunk = (short *) malloc(sizeof(char) * hopSize * 2);
+            memset(chunk, 0x00, sizeof(char) * hopSize * 2);
             
-            speex_echo_capture(st, &inBuffer[iSignal], &outBuffer[iSignal]);
-            speex_preprocess_run(den, &outBuffer[iSignal]);
+            short * outChunk = (short *) malloc(sizeof(char) * hopSize * 2);
+            memset(outChunk, 0x00, sizeof(char) * hopSize * 2);
 
-            speex_echo_state_destroy(st);
-            speex_preprocess_state_destroy(den);
+            for (unsigned int currentChunkID = 0; currentChunkID < frameSize; currentChunkID += hopSize) {
+                
+                memcpy(&(chunk[0]), &(inBuffer[currentChunkID]), sizeof(char) * hopSize * 2);
+
+                SpeexEchoState * st;
+                SpeexPreprocessState * den;
+                st = speex_echo_state_init(hopSize, frameSize);
+                den = speex_preprocess_state_init(hopSize, sampleRate);
+
+                speex_echo_ctl(st, SPEEX_ECHO_SET_SAMPLING_RATE, &sampleRate);
+                speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_STATE, st);
+
+                speex_echo_capture(st, chunk, outChunk);
+                speex_preprocess_run(den, chunk);
+
+                speex_echo_state_destroy(st);
+                speex_preprocess_state_destroy(den);
+
+                memcpy(&(outBuffer[currentChunkID]), &(outChunk[0]), sizeof(char) * hopSize * 2);
+            }
+            free(chunk);
+            free(outChunk);
         }
 
+        // Convert back the int16 processed by speex to floats.
         for (iSample = 0; iSample < frameSize; iSample++) {
 
             for (iChannel = 0; iChannel < nSignals; iChannel++) {
@@ -97,7 +116,7 @@
             }
         }
 
-        printf("stop echo process.\n");
+       printf("stop echo process.\n");
         return 0;
     }
 

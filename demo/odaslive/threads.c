@@ -778,7 +778,7 @@
                 // +--------------------------------------------------+                     
 
                     begin = clock();
-                    con_powers_process(objs->con_echo_mics_object);
+                    con_hops_process(objs->con_echo_mics_object);
                     end = clock();
                     prf->con_echo_mics_prf += (float) (((double) (end-begin)) / CLOCKS_PER_SEC);     
 

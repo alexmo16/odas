@@ -407,34 +407,10 @@
         cfg = mod_echo_cfg_construct();
 
         // +----------------------------------------------------------+
-        // | Hanning window size                                      |
+        // | frameSize                                                |
         // +----------------------------------------------------------+
 
-            cfg->bSize = parameters_lookup_int(fileConfig, "sne.b");
-
-        // +----------------------------------------------------------+
-        // | alphaS                                                   |
-        // +----------------------------------------------------------+
-
-            cfg->alphaS = parameters_lookup_float(fileConfig, "sne.alphaS");
-
-        // +----------------------------------------------------------+
-        // | Number of frames                                         |
-        // +----------------------------------------------------------+
-
-            cfg->L = parameters_lookup_int(fileConfig, "sne.L");
-
-        // +----------------------------------------------------------+
-        // | delta                                                    |
-        // +----------------------------------------------------------+
-
-            cfg->delta = parameters_lookup_float(fileConfig, "sne.delta");
-
-        // +----------------------------------------------------------+
-        // | alphaD                                                   |
-        // +----------------------------------------------------------+
-
-            cfg->alphaD = parameters_lookup_float(fileConfig, "sne.alphaD");            
+            cfg->frameSize = parameters_lookup_int(fileConfig, "general.size.frameSize");           
 
         return cfg;
 

@@ -8,17 +8,12 @@
         msg_hops_obj * out;        
 
         char enabled;
+        unsigned int frameSize;
 
     } mod_echo_obj;
 
     typedef struct mod_echo_cfg {
-        
-        unsigned int bSize;
-        float alphaS;
-        unsigned int L;
-        float delta;
-        float alphaD;
-
+        unsigned int frameSize;
     } mod_echo_cfg;
 
     mod_echo_obj * mod_echo_construct(const mod_echo_cfg * mod_noise_config, const msg_hops_cfg * msg_hops_config);
