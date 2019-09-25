@@ -28,7 +28,6 @@
         obj->enabled = 0;
 
         return obj;
-
     }
 
     void mod_echo_destroy(mod_echo_obj * obj) {
@@ -38,7 +37,6 @@
         env2env_mcra_destroy(obj->env2env_mcra);
 
         free((void *) obj);
-
     }
 
     int mod_echo_process(mod_echo_obj * obj) {
@@ -60,7 +58,10 @@
         
         unsigned int frameSize = obj->in->freqs->halfFrameSize * 2;
         
+        printf("frame %d\n", frameSize);
         short * inBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * 4);
+
+        printf("inBuffer: %d\n", *inBuffer);
         memset(inBuffer, 0x00, sizeof(char) * nSignals * frameSize * 4);
         
         short * outBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * 4);
@@ -72,7 +73,6 @@
         for (iSample = 0; iSample < frameSize; iSample++) {
 
             for (iChannel = 0; iChannel < nSignals; iChannel++) {
-            
                 sample = obj->in->freqs->array[iChannel][iSample];
                 pcm_normalized2signedXXbits(sample, nBytes, bytes);
                 memcpy(&(inBuffer[nBytesTotal]), &(bytes[4-nBytes]), sizeof(char) * nBytes);
@@ -82,19 +82,14 @@
         }
 
         for (unsigned int iSignal = 0; iSignal < nSignals; iSignal++) {
-            SpeexEchoState *st;
-            SpeexPreprocessState *den;
-            int speexRtnValue = speex_echo_ctl(st, SPEEX_ECHO_SET_SAMPLING_RATE, &sampleRate);
-            if (speexRtnValue != 0) {
-                return -1;
-            }
-            speexRtnValue = speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_STATE, st);
-            if (speexRtnValue != 0) {
-                return -1;
-            }
-            st = speex_echo_state_init(frameSize, TAIL);
+            SpeexEchoState * st;
+            SpeexPreprocessState * den;
+            st = speex_echo_state_init(frameSize, frameSize);
             den = speex_preprocess_state_init(frameSize, sampleRate);
-
+            
+            speex_echo_ctl(st, SPEEX_ECHO_SET_SAMPLING_RATE, &sampleRate);
+            speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_STATE, st);
+            
             speex_echo_capture(st, &inBuffer[iSignal], &outBuffer[iSignal]);
             speex_preprocess_run(den, &outBuffer[iSignal]);
 
@@ -113,13 +108,9 @@
                 sample = pcm_signedXXbits2normalized(bytes, nBytes);
 
                 obj->out->envs->array[iChannel][iSample] = sample;
-
             }
-
         }
 
-        free((void *) inBuffer);
-        free((void *) outBuffer);
         printf("stop echo process.\n");
         return 0;
     }
@@ -128,26 +119,22 @@
 
         obj->in = in;
         obj->out = out;
-
     }
 
     void mod_echo_disconnect(mod_echo_obj * obj) {
 
         obj->in = (msg_spectra_obj *) NULL;
         obj->out = (msg_powers_obj *) NULL;
-
     }
 
     void mod_echo_enable(mod_echo_obj * obj) {
 
         obj->enabled = 1;
-
     }
 
     void mod_echo_disable(mod_echo_obj * obj) {
 
         obj->enabled = 0;
-
     }
 
     mod_echo_cfg * mod_echo_cfg_construct(void) {
@@ -157,17 +144,12 @@
         cfg = (mod_echo_cfg *) malloc(sizeof(mod_echo_cfg));
 
         return cfg;
-
     }
 
     void mod_echo_cfg_destroy(mod_echo_cfg * cfg) {
 
         free((void *) cfg);
-
     }
 
     void mod_echo_cfg_printf(const mod_echo_cfg * cfg) {
-
-
-
     }

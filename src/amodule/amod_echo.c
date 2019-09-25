@@ -69,15 +69,12 @@
             msg_spectra_in = amsg_spectra_filled_pop(obj->in);
             msg_powers_out = amsg_powers_empty_pop(obj->out);
             mod_echo_connect(obj->mod_echo, msg_spectra_in, msg_powers_out);
-            printf("abc\n");
+
             rtnValue = mod_echo_process(obj->mod_echo);
-            printf("abc");
             mod_echo_disconnect(obj->mod_echo);
-            printf("abc");
+            
             amsg_spectra_empty_push(obj->in, msg_spectra_in);
-            printf("abc");
             amsg_powers_filled_push(obj->out, msg_powers_out);
-            printf("abc");
             // If this is the last frame, rtnValue = -1
             if (rtnValue == -1) {
                 break;
