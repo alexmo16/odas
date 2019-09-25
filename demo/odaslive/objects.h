@@ -18,11 +18,11 @@
         mod_resample_obj * mod_resample_mics_object;
         con_hops_obj * con_hops_mics_rs_object;
 
+        mod_echo_obj * mod_echo_mics_object;
+        con_hops_obj * con_echo_mics_object;
+
         mod_stft_obj * mod_stft_mics_object;
         con_spectra_obj * con_spectra_mics_object;
-
-        mod_echo_obj * mod_echo_mics_object;
-        con_powers_obj * con_echo_mics_object;
 
         mod_noise_obj * mod_noise_mics_object;
         con_powers_obj * con_powers_mics_object;
@@ -78,11 +78,11 @@
         amod_resample_obj * amod_resample_mics_object;
         acon_hops_obj * acon_hops_mics_rs_object;
 
+        amod_echo_obj * amod_echo_mics_object;
+        acon_hops_obj * acon_echo_mics_object;
+
         amod_stft_obj * amod_stft_mics_object;
         acon_spectra_obj * acon_spectra_mics_object;
-
-        amod_echo_obj * amod_echo_mics_object;
-        acon_powers_obj * acon_echo_mics_object;
 
         amod_noise_obj * amod_noise_mics_object;
         acon_powers_obj * acon_powers_mics_object;
