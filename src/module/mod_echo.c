@@ -23,79 +23,84 @@
     }
 
     int mod_echo_process(mod_echo_obj * obj) {
+        // if the module is disable, the input is directly connected to the output. 
         if (obj->enabled == 0) {
             obj->out = obj->in;
             return 0;
         }
 
         printf("start echo process.\n");
-
         const unsigned int nSignals = obj->in->hops->nSignals;
-        //printf("%d signals\n", nSignals);
         
         unsigned int iChannel;
         unsigned int iSample;
         float sample;
-        unsigned int nBytes = 2;
-        unsigned int nBytesTotal = 0;
+        unsigned int nBytes = 4;
         
         unsigned int hopSize = obj->in->hops->hopSize;
         unsigned int frameSize = obj->frameSize;
         unsigned int sampleRate = obj->in->fS;
         
-        //printf("hopSize %d\n", hopSize);
-        //printf("frame %d\n", frameSize);
-        short * inBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * 2);
-
-        //printf("inBuffer: %d\n", *inBuffer);
-        memset(inBuffer, 0x00, sizeof(char) * nSignals * frameSize * 2);
+        // contains input signal converted in int16.
+        short * inBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * nBytes);
+        memset(inBuffer, 0x00, sizeof(char) * nSignals * frameSize * nBytes);
         
-        short * outBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * 2);
-        //printf("outBuffer: %d\n", *outBuffer);
-        memset(outBuffer, 0x00, sizeof(char) * nSignals * frameSize * 2);
+        // contains output signal in int16.
+        short * outBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * nBytes);
+        memset(outBuffer, 0x00, sizeof(char) * nSignals * frameSize * nBytes);
         
         char bytes[4];
         memset(bytes, 0x00, 4 * sizeof(char));
         
         // Convert floats from the input to int16 bytes.
+        unsigned int nBytesTotal = 0;
         for (iSample = 0; iSample < frameSize; iSample++) {
             for (iChannel = 0; iChannel < nSignals; iChannel++) {
+                // extract the float sample
                 sample = obj->in->hops->array[iChannel][iSample];
+                // convert the float to a byte array of 4 chars.
                 pcm_normalized2signedXXbits(sample, nBytes, bytes);
+                // copy the 4 chars in the inBuffer.
                 memcpy(&(inBuffer[nBytesTotal]), &(bytes[4-nBytes]), sizeof(char) * nBytes);
                 
                 nBytesTotal += nBytes;
             }
         }
 
-        // Process the echo cancelling on the in16 bytes.
+        // Process the echo cancelling on the int16 bytes.
         for (unsigned int iSignal = 0; iSignal < nSignals; iSignal++) {
             
-            short * chunk = (short *) malloc(sizeof(char) * hopSize * 2);
-            memset(chunk, 0x00, sizeof(char) * hopSize * 2);
+            // chunk of int16 to send to speex.
+            short * chunk = (short *) malloc(sizeof(char) * hopSize * nBytes);
+            memset(chunk, 0x00, sizeof(char) * hopSize * nBytes);
             
-            short * outChunk = (short *) malloc(sizeof(char) * hopSize * 2);
-            memset(outChunk, 0x00, sizeof(char) * hopSize * 2);
+            // Processed int16 signal.
+            short * outChunk = (short *) malloc(sizeof(char) * hopSize * nBytes);
+            memset(outChunk, 0x00, sizeof(char) * hopSize * nBytes);
 
             for (unsigned int currentChunkID = 0; currentChunkID < frameSize; currentChunkID += hopSize) {
                 
-                memcpy(&(chunk[0]), &(inBuffer[currentChunkID]), sizeof(char) * hopSize * 2);
+                // take a chunk of bytes (size of hopSize) from inBuffer and put them in the chunk buffer. 
+                memcpy(&(chunk[0]), &(inBuffer[currentChunkID]), sizeof(char) * hopSize * nBytes);
 
                 SpeexEchoState * st;
                 SpeexPreprocessState * den;
                 st = speex_echo_state_init(hopSize, frameSize);
                 den = speex_preprocess_state_init(hopSize, sampleRate);
 
+                // Change some variables in speex.
                 speex_echo_ctl(st, SPEEX_ECHO_SET_SAMPLING_RATE, &sampleRate);
                 speex_preprocess_ctl(den, SPEEX_PREPROCESS_SET_ECHO_STATE, st);
 
+                // Echo process.
                 speex_echo_capture(st, chunk, outChunk);
                 speex_preprocess_run(den, chunk);
 
                 speex_echo_state_destroy(st);
                 speex_preprocess_state_destroy(den);
-
-                memcpy(&(outBuffer[currentChunkID]), &(outChunk[0]), sizeof(char) * hopSize * 2);
+                
+                // Copy Speex output in the outBuffer.
+                memcpy(&(outBuffer[currentChunkID]), &(outChunk[0]), sizeof(char) * hopSize * nBytes);
             }
             free(chunk);
             free(outChunk);
