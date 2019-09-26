@@ -400,46 +400,6 @@
 
     }
 
-    mod_echo_cfg * parameters_mod_echo_mics_config(const char * fileConfig) {
-
-        mod_echo_cfg * cfg;
-
-        cfg = mod_echo_cfg_construct();
-
-        // +----------------------------------------------------------+
-        // | Hanning window size                                      |
-        // +----------------------------------------------------------+
-
-            cfg->bSize = parameters_lookup_int(fileConfig, "sne.b");
-
-        // +----------------------------------------------------------+
-        // | alphaS                                                   |
-        // +----------------------------------------------------------+
-
-            cfg->alphaS = parameters_lookup_float(fileConfig, "sne.alphaS");
-
-        // +----------------------------------------------------------+
-        // | Number of frames                                         |
-        // +----------------------------------------------------------+
-
-            cfg->L = parameters_lookup_int(fileConfig, "sne.L");
-
-        // +----------------------------------------------------------+
-        // | delta                                                    |
-        // +----------------------------------------------------------+
-
-            cfg->delta = parameters_lookup_float(fileConfig, "sne.delta");
-
-        // +----------------------------------------------------------+
-        // | alphaD                                                   |
-        // +----------------------------------------------------------+
-
-            cfg->alphaD = parameters_lookup_float(fileConfig, "sne.alphaD");            
-
-        return cfg;
-
-    }
-
     mod_noise_cfg * parameters_mod_noise_mics_config(const char * fileConfig) {
 
         mod_noise_cfg * cfg;

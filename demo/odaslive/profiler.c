@@ -21,9 +21,6 @@
         prf->mod_stft_mics_prf = 0.0f;
         prf->con_spectra_mics_prf = 0.0f;
 
-        prf->mod_echo_mics_prf = 0.0f;
-        prf->con_echo_mics_prf = 0.0f;
-
         prf->mod_noise_mics_prf = 0.0f;
         prf->con_powers_mics_prf = 0.0f;
 
@@ -89,7 +86,6 @@
         module = prf->mod_mapping_mics_prf + 
                  prf->mod_resample_mics_prf +
                  prf->mod_stft_mics_prf +
-                 prf->mod_echo_mics_prf +
                  prf->mod_noise_mics_prf +
                  prf->mod_ssl_prf +
                  prf->mod_sst_prf +
@@ -108,7 +104,6 @@
                     prf->con_hops_mics_map_prf +
                     prf->con_hops_mics_rs_prf +
                     prf->con_spectra_mics_prf +
-                    prf->con_echo_mics_prf +
                     prf->con_powers_mics_prf +
                     prf->con_pots_ssl_prf +
                     prf->con_targets_sst_prf +
@@ -140,9 +135,6 @@
         printf("| + STFT                                     |\n");
         printf("|    - Module.......... %07.3f (%06.2f%%)    |\n",prf->mod_stft_mics_prf,roundf(10000.0f * prf->mod_stft_mics_prf / prf->duration) / 100.0f);
         printf("|    - Connector....... %07.3f (%06.2f%%)    |\n",prf->con_spectra_mics_prf,roundf(10000.0f * prf->con_spectra_mics_prf / prf->duration) / 100.0f);
-        printf("| + Echo                                     |\n");
-        printf("|    - Module.......... %07.3f (%06.2f%%)    |\n",prf->mod_echo_mics_prf,roundf(10000.0f * prf->mod_echo_mics_prf / prf->duration) / 100.0f);
-        printf("|    - Connector....... %07.3f (%06.2f%%)    |\n",prf->con_echo_mics_prf,roundf(10000.0f * prf->con_echo_mics_prf / prf->duration) / 100.0f);
         printf("| + Noise                                    |\n");
         printf("|    - Module.......... %07.3f (%06.2f%%)    |\n",prf->mod_noise_mics_prf,roundf(10000.0f * prf->mod_noise_mics_prf / prf->duration) / 100.0f);
         printf("|    - Connector....... %07.3f (%06.2f%%)    |\n",prf->con_powers_mics_prf,roundf(10000.0f * prf->con_powers_mics_prf / prf->duration) / 100.0f);
