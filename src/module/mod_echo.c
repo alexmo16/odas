@@ -33,28 +33,26 @@
         const unsigned int nSignals = obj->in->hops->nSignals;
         
         unsigned int iChannel;
-        unsigned int iSample;
         float sample;
         unsigned int nBytes = 4;
         
         unsigned int hopSize = obj->in->hops->hopSize;
-        unsigned int frameSize = obj->frameSize;
         unsigned int sampleRate = obj->in->fS;
         
         // contains input signal converted in int16.
-        short * inBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * nBytes);
-        memset(inBuffer, 0x00, sizeof(char) * nSignals * frameSize * nBytes);
+        short * inBuffer = (short *) malloc(sizeof(char) * nSignals * hopSize * nBytes);
+        memset(inBuffer, 0x00, sizeof(char) * nSignals * hopSize * nBytes);
         
         // contains output signal in int16.
-        short * outBuffer = (short *) malloc(sizeof(char) * nSignals * frameSize * nBytes);
-        memset(outBuffer, 0x00, sizeof(char) * nSignals * frameSize * nBytes);
+        short * outBuffer = (short *) malloc(sizeof(char) * nSignals * hopSize * nBytes);
+        memset(outBuffer, 0x00, sizeof(char) * nSignals * hopSize * nBytes);
         
         char bytes[4];
         memset(bytes, 0x00, 4 * sizeof(char));
         
         // Convert floats from the input to int16 bytes.
         unsigned int nBytesTotal = 0;
-        for (iSample = 0; iSample < frameSize; iSample++) {
+        for (unsigned int iSample = 0; iSample < hopSize; iSample++) {
             for (iChannel = 0; iChannel < nSignals; iChannel++) {
                 // extract the float sample
                 sample = obj->in->hops->array[iChannel][iSample];
@@ -78,14 +76,14 @@
             short * outChunk = (short *) malloc(sizeof(char) * hopSize * nBytes);
             memset(outChunk, 0x00, sizeof(char) * hopSize * nBytes);
 
-            for (unsigned int currentChunkID = 0; currentChunkID < frameSize; currentChunkID += hopSize) {
+            for (unsigned int currentChunkID = 0; currentChunkID < hopSize; currentChunkID += hopSize) {
                 
                 // take a chunk of bytes (size of hopSize) from inBuffer and put them in the chunk buffer. 
                 memcpy(&(chunk[0]), &(inBuffer[currentChunkID]), sizeof(char) * hopSize * nBytes);
 
                 SpeexEchoState * st;
                 SpeexPreprocessState * den;
-                st = speex_echo_state_init(hopSize, frameSize);
+                st = speex_echo_state_init(hopSize, hopSize);
                 den = speex_preprocess_state_init(hopSize, sampleRate);
 
                 // Change some variables in speex.
@@ -107,7 +105,7 @@
         }
 
         // Convert back the int16 processed by speex to floats.
-        for (iSample = 0; iSample < frameSize; iSample++) {
+        for (unsigned int iSample = 0; iSample < hopSize; iSample++) {
 
             for (iChannel = 0; iChannel < nSignals; iChannel++) {
 
@@ -121,7 +119,7 @@
             }
         }
 
-       printf("stop echo process.\n");
+        printf("stop echo process.\n");
         return 0;
     }
 
