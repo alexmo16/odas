@@ -1,10 +1,7 @@
     #include <amodule/amod_echo.h>
 
     amod_echo_obj * amod_echo_construct(const mod_echo_cfg * mod_echo_config, const msg_hops_cfg * msg_hops_config) {
-
-        amod_echo_obj * obj;
-
-        obj = (amod_echo_obj *) malloc(sizeof(amod_echo_obj));
+        amod_echo_obj * obj = (amod_echo_obj *) malloc(sizeof(amod_echo_obj));
 
         obj->mod_echo = mod_echo_construct(mod_echo_config, msg_hops_config);
         
@@ -55,13 +52,11 @@
     }
 
     void * amod_echo_thread(void * ptr) {
-
-        amod_echo_obj * obj;
         msg_hops_obj * msg_hops_in;
         msg_hops_obj * msg_hops_out;
         int rtnValue;
 
-        obj = (amod_echo_obj *) ptr;
+        amod_echo_obj * obj = (amod_echo_obj *) ptr;
 
         while(1) {
             // Pop a message, process, and push back

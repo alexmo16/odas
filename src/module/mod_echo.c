@@ -4,10 +4,7 @@
     #include <utils/pcm.h>
 
     mod_echo_obj * mod_echo_construct(const mod_echo_cfg * mod_echo_config, const msg_hops_cfg * msg_hops_config) {
-
-        mod_echo_obj * obj;
-
-        obj = (mod_echo_obj *) malloc(sizeof(mod_echo_obj));
+        mod_echo_obj * obj = (mod_echo_obj *) malloc(sizeof(mod_echo_obj));
 
         obj->in = (msg_hops_obj *) NULL;
         obj->out = (msg_hops_obj *) NULL;
@@ -30,13 +27,10 @@
         }
 
         printf("start echo process.\n");
+
         const unsigned int nSignals = obj->in->hops->nSignals;
-        
-        unsigned int iChannel;
-        float sample;
-        unsigned int nBytes = 4;
-        
-        unsigned int hopSize = obj->in->hops->hopSize;
+        const unsigned int nBytes = 4;
+        const unsigned int hopSize = obj->in->hops->hopSize;
         unsigned int sampleRate = obj->in->fS;
         
         // contains input signal converted in int16.
@@ -53,9 +47,9 @@
         // Convert floats from the input to int16 bytes.
         unsigned int nBytesTotal = 0;
         for (unsigned int iSample = 0; iSample < hopSize; iSample++) {
-            for (iChannel = 0; iChannel < nSignals; iChannel++) {
+            for (unsigned int iChannel = 0; iChannel < nSignals; iChannel++) {
                 // extract the float sample
-                sample = obj->in->hops->array[iChannel][iSample];
+                float sample = obj->in->hops->array[iChannel][iSample];
                 // convert the float to a byte array of 4 chars.
                 pcm_normalized2signedXXbits(sample, nBytes, bytes);
                 // copy the 4 chars in the inBuffer.
@@ -107,13 +101,13 @@
         // Convert back the int16 processed by speex to floats.
         for (unsigned int iSample = 0; iSample < hopSize; iSample++) {
 
-            for (iChannel = 0; iChannel < nSignals; iChannel++) {
+            for (unsigned int iChannel = 0; iChannel < nSignals; iChannel++) {
 
                 memcpy(&(bytes[4-nBytes]),
                        &(outBuffer[(iSample * nSignals + iChannel) * nBytes]),
                        sizeof(char) * nBytes);
 
-                sample = pcm_signedXXbits2normalized(bytes, nBytes);
+                float sample = pcm_signedXXbits2normalized(bytes, nBytes);
 
                 obj->out->hops->array[iChannel][iSample] = sample;
             }
@@ -146,11 +140,7 @@
     }
 
     mod_echo_cfg * mod_echo_cfg_construct(void) {
-
-        mod_echo_cfg * cfg;
-
-        cfg = (mod_echo_cfg *) malloc(sizeof(mod_echo_cfg));
-
+        mod_echo_cfg * cfg = (mod_echo_cfg *) malloc(sizeof(mod_echo_cfg));
         return cfg;
     }
 
