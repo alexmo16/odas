@@ -79,7 +79,7 @@
                 // | Connector                                        |
                 // +--------------------------------------------------+  
 
-                    objs->con_echo_mics_object = con_hops_construct(2, cfgs->msg_hops_mics_rs_config);
+                    objs->con_echo_mics_object = con_hops_construct(1, cfgs->msg_hops_mics_rs_config);
 
             // +------------------------------------------------------+
             // | STFT                                                 |
@@ -357,8 +357,8 @@
                 // +--------------------------------------------------+  
 
                     mod_echo_connect(objs->mod_echo_mics_object,
-                                      objs->con_hops_mics_rs_object->outs[0],
-                                      objs->con_echo_mics_object->in);
+                                     objs->con_hops_mics_rs_object->outs[0],
+                                     objs->con_echo_mics_object->in);
 
             // +------------------------------------------------------+
             // | STFT                                                 |
@@ -412,7 +412,7 @@
                 // +--------------------------------------------------+
 
                     inj_targets_connect(objs->inj_targets_sst_object,
-                                        objs->con_echo_mics_object->outs[0],
+                                        objs->con_hops_mics_rs_object->outs[1],
                                         objs->con_targets_sst_object->in);
 
             // +------------------------------------------------------+
