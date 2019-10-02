@@ -3,6 +3,8 @@
     #include <speex/speex_preprocess.h>
     #include <utils/pcm.h>
 
+    #define NN 128
+
     mod_echo_obj * mod_echo_construct(const mod_echo_cfg * mod_echo_config, const msg_hops_cfg * msg_hops_config) {
         mod_echo_obj * obj = (mod_echo_obj *) malloc(sizeof(mod_echo_obj));
 
@@ -63,22 +65,22 @@
         for (unsigned int iSignal = 0; iSignal < nSignals; iSignal++) {
             
             // chunk of int16 to send to speex.
-            short * chunk = (short *) malloc(sizeof(char) * hopSize * nBytes);
-            memset(chunk, 0x00, sizeof(char) * hopSize * nBytes);
+            short * chunk = (short *) malloc(sizeof(char) * NN * nBytes);
+            memset(chunk, 0x00, sizeof(char) * NN * nBytes);
             
             // Processed int16 signal.
-            short * outChunk = (short *) malloc(sizeof(char) * hopSize * nBytes);
-            memset(outChunk, 0x00, sizeof(char) * hopSize * nBytes);
+            short * outChunk = (short *) malloc(sizeof(char) * NN * nBytes);
+            memset(outChunk, 0x00, sizeof(char) * NN * nBytes);
 
-            for (unsigned int currentChunkID = 0; currentChunkID < hopSize; currentChunkID += hopSize) {
+            for (unsigned int currentChunkID = 0; currentChunkID < hopSize; currentChunkID += NN) {
                 
                 // take a chunk of bytes (size of hopSize) from inBuffer and put them in the chunk buffer. 
-                memcpy(&(chunk[0]), &(inBuffer[currentChunkID]), sizeof(char) * hopSize * nBytes);
+                memcpy(&(chunk[0]), &(inBuffer[currentChunkID]), sizeof(char) * NN * nBytes);
 
                 SpeexEchoState * st;
                 SpeexPreprocessState * den;
-                st = speex_echo_state_init(hopSize, hopSize);
-                den = speex_preprocess_state_init(hopSize, sampleRate);
+                st = speex_echo_state_init(NN, hopSize);
+                den = speex_preprocess_state_init(NN, sampleRate);
 
                 // Change some variables in speex.
                 speex_echo_ctl(st, SPEEX_ECHO_SET_SAMPLING_RATE, &sampleRate);
@@ -92,7 +94,7 @@
                 speex_preprocess_state_destroy(den);
                 
                 // Copy Speex output in the outBuffer.
-                memcpy(&(outBuffer[currentChunkID]), &(outChunk[0]), sizeof(char) * hopSize * nBytes);
+                memcpy(&(outBuffer[currentChunkID]), &(outChunk[0]), sizeof(char) * NN * nBytes);
             }
             free(chunk);
             free(outChunk);
